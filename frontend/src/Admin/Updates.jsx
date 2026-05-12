@@ -60,47 +60,36 @@ const Updates = () => {
     <div className="min-h-screen bg-[#e8dcf0] p-5">
       <div className="w-[95%] mx-auto bg-gray-100 rounded-[20px] flex overflow-hidden">
         {/* SIDEBAR */}
-        <div className="w-[230px] bg-white p-5 shrink-0">
-          <h2 className="text-2xl font-bold mb-5">Admin</h2>
+        <div className="w-60 bg-white p-5 shrink-0">
+          <h2 className="text-2xl font-bold mb-5 text-gray-800">Admin</h2>
 
-          <div className="text-sm font-medium text-gray-500 mb-3 mt-4">
+          <div className="menu-title text-xs font-medium text-gray-500 mb-4 uppercase tracking-wider">
             Admin Menu
           </div>
-          <ul className="list-none space-y-2.5">
-            <Link to="/" className="block text-decoration-none text-gray-700">
-              <li className="p-2.5 rounded-[10px] hover:bg-purple-100 hover:text-[#5a3ec8] cursor-pointer transition-colors">
+          <ul className="space-y-2.5">
+            <Link to="/" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium ">
                 Dashboard
               </li>
             </Link>
-            <Link
-              to="/library"
-              className="block text-decoration-none text-gray-700"
-            >
-              <li className="p-2.5 rounded-[10px] hover:bg-purple-100 hover:text-[#5a3ec8] cursor-pointer transition-colors">
+            <Link to="/library" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium">
                 Library
               </li>
             </Link>
-            <Link
-              to="/updates"
-              className="block text-decoration-none text-gray-700"
-            >
-              <li className="p-2.5 rounded-[10px] bg-purple-100 text-[#5a3ec8] font-medium cursor-pointer transition-colors">
+
+            <Link to="/updates" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium bg-purple-100 text-purple-600">
                 Updates
               </li>
             </Link>
-            <Link
-              to="/borrowers"
-              className="block text-decoration-none text-gray-700"
-            >
-              <li className="p-2.5 rounded-[10px] hover:bg-purple-100 hover:text-[#5a3ec8] cursor-pointer transition-colors">
+            <Link to="/borrowers" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium">
                 Borrowers List
               </li>
             </Link>
-            <Link
-              to="/addnewbook"
-              className="block text-decoration-none text-gray-700"
-            >
-              <li className="p-2.5 rounded-[10px] hover:bg-purple-100 hover:text-[#5a3ec8] cursor-pointer transition-colors">
+            <Link to="/addnewbook" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium">
                 Add New Books
               </li>
             </Link>

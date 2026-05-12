@@ -18,7 +18,7 @@ const Dashboard = () => {
               Dashboard
             </li>
             <Link to="/library" className="block">
-              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium ">
                 Library
               </li>
             </Link>

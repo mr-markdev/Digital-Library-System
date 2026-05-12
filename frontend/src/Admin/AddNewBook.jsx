@@ -1,7 +1,12 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+const API_BASE = "http://localhost/digital-library-system";
+const BOOKS_ENDPOINT = `${API_BASE}/backend/api/books.php`;
 
 const AddNewBook = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -10,6 +15,9 @@ const AddNewBook = () => {
     status: "available",
   });
 
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -17,82 +25,90 @@ const AddNewBook = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Book added:", formData);
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const payload = {
+        ...formData,
+        quantity: formData.quantity === "" ? 0 : Number(formData.quantity),
+        // Map UI status 'out' -> backend status 'out' (kept as-is)
+        status: formData.status,
+      };
+
+      const res = await fetch(BOOKS_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || "Failed to add book");
+
+      // Go to library so the newly added book is displayed.
+      navigate("/library");
+    } catch (e2) {
+      setError(e2.message || "Failed to add book");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#e8dcf0] p-5">
       <div className="w-[95%] mx-auto bg-gray-100 rounded-[20px] flex overflow-hidden">
         {/* SIDEBAR */}
-        <div className="w-[230px] bg-white p-5 shrink-0">
-          <h2 className="text-2xl font-bold mb-5">Admin</h2>
+        <div className="w-60 bg-white p-5 shrink-0">
+          <h2 className="text-2xl font-bold mb-5 text-gray-800">Admin</h2>
 
-          <div className="text-sm font-medium text-gray-500 mb-3 mt-4">
+          <div className="menu-title text-xs font-medium text-gray-500 mb-4 uppercase tracking-wider">
             Admin Menu
           </div>
-          <ul className="list-none space-y-2.5">
-            <Link to="/" className="block text-decoration-none text-gray-700">
-              <li className="p-2.5 rounded-[10px] hover:bg-purple-100 hover:text-[#5a3ec8] cursor-pointer transition-colors">
+          <ul className="space-y-2.5">
+            <Link to="/" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium ">
                 Dashboard
               </li>
             </Link>
-            <Link
-              to="/library"
-              className="block text-decoration-none text-gray-700"
-            >
-              <li className="p-2.5 rounded-[10px] hover:bg-purple-100 hover:text-[#5a3ec8] cursor-pointer transition-colors">
+            <Link to="/library" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium">
                 Library
               </li>
             </Link>
-            <Link
-              to="/updates"
-              className="block text-decoration-none text-gray-700"
-            >
-              <li className="p-2.5 rounded-[10px] hover:bg-purple-100 hover:text-[#5a3ec8] cursor-pointer transition-colors">
+
+            <Link to="/updates" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium">
                 Updates
               </li>
             </Link>
-            <Link
-              to="/borrowers"
-              className="block text-decoration-none text-gray-700"
-            >
-              <li className="p-2.5 rounded-[10px] hover:bg-purple-100 hover:text-[#5a3ec8] cursor-pointer transition-colors">
+            <Link to="/borrowers" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium">
                 Borrowers List
               </li>
             </Link>
-            <a
-              href="LIBMANAddNewBook.html"
-              className="block text-decoration-none text-gray-700"
-            >
-              <li className="p-2.5 rounded-[10px] bg-purple-100 text-[#5a3ec8] font-medium cursor-pointer transition-colors">
+            <Link to="/addnewbook" className="block">
+              <li className="p-2.5 rounded-xl cursor-pointer transition-all hover:bg-purple-100 hover:text-purple-600 font-medium bg-purple-100 text-purple-600">
                 Add New Books
               </li>
-            </a>
+            </Link>
           </ul>
         </div>
 
         {/* MAIN CONTENT */}
         <div className="flex-1 p-5">
           {/* TOPBAR */}
-          <div className="flex justify-between items-center mb-5">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="py-2 px-4 rounded-full w-[250px] border-none focus:outline-none focus:ring-2 focus:ring-purple-300"
-            />
-            <div className="flex items-center gap-2.5">
-              <span className="text-gray-700">Log Out</span>
-            </div>
-          </div>
 
           <h2 className="text-2xl font-bold mb-4 text-gray-800">
             Add New Book
           </h2>
 
           {/* FORM CONTAINER */}
-          <div className="bg-white p-[30px] rounded-[15px] shadow-sm h-[calc(100vh-180px)]">
+          <div className="bg-white p-[30px] rounded-[15px] shadow-sm">
+            {error ? <div className="text-red-600 mb-4">{error}</div> : null}
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="form-group">
                 <label className="text-sm mb-1.5 text-gray-600">
@@ -165,9 +181,10 @@ const AddNewBook = () => {
 
               <button
                 type="submit"
-                className="w-full py-3 bg-[#5a3ec8] text-white rounded-lg cursor-pointer font-bold hover:bg-[#4329a8] transition-colors"
+                disabled={submitting}
+                className="w-full py-3 bg-[#5a3ec8] text-white rounded-lg cursor-pointer font-bold hover:bg-[#4329a8] transition-colors disabled:opacity-60"
               >
-                Add Book
+                {submitting ? "Adding..." : "Add Book"}
               </button>
             </form>
           </div>
