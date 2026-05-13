@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 const BorrowersList = () => {
@@ -120,10 +119,12 @@ const BorrowersList = () => {
             <input
               type="text"
               placeholder="Search..."
-              className="py-2 px-4 rounded-full w-[250px] border-none focus:outline-none focus:ring-2 focus:ring-purple-300"
+              className="px-4 py-2 rounded-3xl border border-gray-200 shadow-sm w-64 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-transparent"
             />
-            <div className="flex items-center gap-2.5">
-              <span className="text-gray-700">Log Out</span>
+            <div className="flex items-center gap-3">
+              <span className="text-gray-700 font-medium cursor-pointer hover:text-purple-600 transition-colors">
+                Log Out
+              </span>
             </div>
           </div>
 

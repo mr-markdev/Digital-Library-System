@@ -1,8 +1,36 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Library from "./Library";
+
+const API_BASE = "http://localhost/Digital-Library-System";
+const BOOKS_ENDPOINT = `${API_BASE}/backend/api/books.php`;
 
 const Dashboard = () => {
+  const [stats, setStats] = useState({ totalBooks: 0, availableBooks: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  void error;
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`${BOOKS_ENDPOINT}?stats=1`);
+        const json = await res.json();
+        if (!json.success)
+          throw new Error(json.error || "Failed to load stats");
+        setStats(json.data || { totalBooks: 0, availableBooks: 0 });
+      } catch (e) {
+        // error intentionally stored for future UI
+        setError(e.message || "Failed to load stats");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <div className="bg-gradient-to-br from-purple-50 to-indigo-50 min-h-screen p-5">
       <div className="w-[95%] mx-auto bg-gray-50 rounded-3xl flex overflow-hidden shadow-2xl max-w-7xl">
@@ -66,11 +94,11 @@ const Dashboard = () => {
             {/* Total Books */}
             <div className="bg-blue-50 p-6 rounded-3xl flex justify-between items-center shadow-sm hover:-translate-y-2 hover:shadow-md transition-all duration-300 group">
               <div className="flex flex-col">
-                <p className="text-sm font-semibold text-blue-800 mb-1.5 opacity-90">
+                <p className="text-sm font-semibold text-blue-800 w-[7.5em] mb-1.5 opacity-90">
                   Total Books
                 </p>
                 <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  12,480
+                  {loading ? "..." : stats.totalBooks.toLocaleString()}
                 </h3>
                 <span className="text-xs bg-white/30 px-3 py-1.5 rounded-full font-medium text-blue-900">
                   +2.5% from last month
@@ -84,10 +112,12 @@ const Dashboard = () => {
             {/* Available Books */}
             <div className="bg-emerald-50 p-6 rounded-3xl flex justify-between items-center shadow-sm hover:-translate-y-2 hover:shadow-md transition-all duration-300 group">
               <div className="flex flex-col">
-                <p className="text-sm font-semibold text-emerald-800 mb-1.5 opacity-90">
+                <p className="text-sm font-semibold text-emerald-800 w-[7.5em] mb-1.5 opacity-90 ">
                   Available Books
                 </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">8,120</h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                  {stats.availableBooks.toLocaleString()}
+                </h3>
                 <span className="text-xs bg-white/30 px-3 py-1.5 rounded-full font-medium text-emerald-900">
                   Ready for checkout
                 </span>
@@ -100,7 +130,7 @@ const Dashboard = () => {
             {/* Borrowed Books */}
             <div className="bg-orange-50 p-6 rounded-3xl flex justify-between items-center shadow-sm hover:-translate-y-2 hover:shadow-md transition-all duration-300 group">
               <div className="flex flex-col">
-                <p className="text-sm font-semibold text-orange-800 mb-1.5 opacity-90">
+                <p className="text-sm font-semibold text-orange-800 w-[7.5em] mb-1.5 opacity-90">
                   Borrowed Books
                 </p>
                 <h3 className="text-3xl font-bold text-gray-900 mb-2">4,360</h3>

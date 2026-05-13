@@ -1,4 +1,0 @@
-RewriteEngine On
-# Route everything under /api to the matching PHP file (except existing files)
-# If your server doesn't use URL rewriting, you can access directly: /backend/api/books.php
-

@@ -1,45 +1,32 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+const API_BASE = "http://localhost/Digital-Library-System";
+
 const Updates = () => {
-  const updates = [
-    {
-      id: 1,
-      time: "10:15 AM",
-      message: 'New Book Added: "Atomic Habits" has been added to the library.',
-      type: "info",
-    },
-    {
-      id: 2,
-      time: "9:40 AM",
-      message: 'Book Returned: Juan Dela Cruz returned "The Great Gatsby".',
-      type: "success",
-    },
-    {
-      id: 3,
-      time: "Yesterday",
-      message: 'Due Reminder: "1984" is due tomorrow (Maria Santos).',
-      type: "warning",
-    },
-    {
-      id: 4,
-      time: "Yesterday",
-      message: 'Overdue Alert: "The Alchemist" is overdue by 3 days.',
-      type: "danger",
-    },
-    {
-      id: 5,
-      time: "April 20",
-      message: "New User Registered: Kevin Torres joined the system.",
-      type: "info",
-    },
-    {
-      id: 6,
-      time: "April 20",
-      message: 'Inventory Updated: 5 new copies of "Sapiens" added.',
-      type: "success",
-    },
-  ];
+  const [updates, setUpdates] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchUpdates = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`${API_BASE}/backend/api/updates.php`);
+        const json = await res.json();
+        if (!json.success)
+          throw new Error(json.error || "Failed to load updates");
+        setUpdates(json.data || []);
+      } catch (e) {
+        setError(e.message || "Failed to load updates");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUpdates();
+  }, []);
 
   const getUpdateCardStyles = (type) => {
     switch (type) {
@@ -103,31 +90,44 @@ const Updates = () => {
             <input
               type="text"
               placeholder="Search..."
-              className="py-2 px-4 rounded-full w-[250px] border-none focus:outline-none focus:ring-2 focus:ring-purple-300"
+              className="px-4 py-2 rounded-3xl border border-gray-200 shadow-sm w-64 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-transparent"
             />
-            <div className="flex items-center gap-2.5">
-              <span className="text-gray-700">Log Out</span>
+            <div className="flex items-center gap-3">
+              <span className="text-gray-700 font-medium cursor-pointer hover:text-purple-600 transition-colors">
+                Log Out
+              </span>
             </div>
           </div>
 
           <h2 className="text-2xl font-bold mt-7.5 text-gray-800">Updates</h2>
 
+          {error ? <div className="text-red-600 mt-4">{error}</div> : null}
+
           {/* UPDATES CONTAINER */}
           <div className="mt-4 flex flex-col gap-3">
-            {updates.map((update) => (
-              <div
-                key={update.id}
-                className={`p-4 rounded-xl bg-white flex justify-between items-center text-sm border-l-4 ${getUpdateCardStyles(update.type)}`}
-              >
-                <span className="text-xs text-gray-500 min-w-[80px]">
-                  {update.time}
-                </span>
-                <p className="text-gray-700 flex-1">
-                  <strong>{update.message.split(":")[0]}:</strong>
-                  {update.message.split(":").slice(1).join(":")}
-                </p>
-              </div>
-            ))}
+            {loading ? (
+              <div className="text-gray-600">Loading updates...</div>
+            ) : updates.length === 0 ? (
+              <div className="text-gray-600">No updates yet.</div>
+            ) : (
+              updates.map((update) => (
+                <div
+                  key={update.id}
+                  className={`p-4 rounded-xl bg-white flex justify-around items-center text-sm border-l-4 ${getUpdateCardStyles(
+                    update.type,
+                  )}`}
+                >
+                  <span className="text-xs text-gray-500 min-w-20 mr-2 ">
+                    {update.time}
+                  </span>
+
+                  <p className="text-gray-700 flex-1">
+                    <strong>{update.message.split(":")[0]}:</strong>
+                    {update.message.split(":").slice(1).join(":")}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

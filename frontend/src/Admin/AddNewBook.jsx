@@ -49,6 +49,30 @@ const AddNewBook = () => {
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "Failed to add book");
 
+      // Record dashboard update
+      try {
+        const message = `New Book Added: "${formData.title}" has been added to the library.`;
+        const recordRes = await fetch(
+          `${API_BASE}/backend/api/books.php?recordUpdate=1`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message,
+              type: "info",
+              bookid: json?.data?.bookid ?? null,
+            }),
+          },
+        );
+        await recordRes.json();
+        // ignore record failure
+      } catch {
+        // ignore
+        void 0;
+      }
+
       // Go to library so the newly added book is displayed.
       navigate("/library");
     } catch (e2) {
